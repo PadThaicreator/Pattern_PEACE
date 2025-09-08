@@ -1,0 +1,4 @@
+https://www.youtube.com/watch?v=hYwjGLVGc3w&t=3138s
+
+pip install fastapi
+pip install uvicorn[standard]

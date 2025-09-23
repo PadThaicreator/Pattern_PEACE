@@ -18,8 +18,29 @@ model User {
   name      String?
   email     String      @unique
   password  String
-  
+  reports   ReportHistory[]
 
   createdAt DateTime? @default(now())
   updatedAt DateTime? @updatedAt
+}
+
+model ReportHistory {
+  id            String      @id @default(auto()) @map("_id") @db.ObjectId
+  reporter      User        @relation(fields: [reporterId], references: [id])
+  reporterId    String  @db.ObjectId
+  typeOfReport  ReportType
+  description   String?
+  createdAt     DateTime?   @default(now())
+}
+model PostHistory {
+  id        String      @id @default(auto()) @map("_id") @db.ObjectId
+  link      String?
+  createdAt DateTime? @default(now())
+}
+
+enum ReportType {
+  SPAM
+  HARASSMENT
+  INAPPROPRIATE
+  OTHER
 }

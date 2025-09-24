@@ -4,7 +4,7 @@ import { Link , useNavigate } from "react-router-dom";
 export default function LoginPage() {
      const navigate = useNavigate();
     const handleLogin = () => {
-        navigate('/home');
+        navigate('/');
     }
     return (
         <div className="flex flex-col gap-5" >

@@ -19,7 +19,7 @@ export default function RegisterPage() {
             <div className="p-2 bg-blue-400 text-center rounded-lg cursor-pointer text-white" >
                 Register
             </div>
-            <Link to="/" className="self-center">Back</Link>
+            <Link to="/login" className="self-center">Back</Link>
         </div>
 
     );

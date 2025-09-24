@@ -1,0 +1,118 @@
+.homepage {
+    text-align: center;
+}
+
+.heroSection {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    border-radius: 20px;
+    padding: 40px;
+    margin-bottom: 30px;
+    box-shadow: 0 8px 32px rgba(31, 38, 135, 0.37);
+}
+
+.heroTitle {
+    font-size: 36px;
+    font-weight: bold;
+    margin-bottom: 15px;
+    background: linear-gradient(45deg, #4285f4, #34a853);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.heroSubtitle {
+    font-size: 18px;
+    color: #666;
+    margin-bottom: 40px;
+}
+
+.socialPlatforms {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 20px;
+    margin-bottom: 40px;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.platformContainer {
+    cursor: pointer;
+    padding: 15px;
+    border-radius: 15px;
+    transition: all 0.3s ease;
+}
+
+.platformContainer:hover {
+    background: rgba(66, 133, 244, 0.1);
+    transform: translateY(-5px);
+}
+
+.platformContainer.selected {
+    background: rgba(66, 133, 244, 0.15);
+    box-shadow: 0 8px 16px rgba(66, 133, 244, 0.2);
+    transform: translateY(-5px);
+}
+
+.platformIcon {
+    width: 80px;
+    height: 80px;
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 10px;
+    overflow: hidden;
+    background: white;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    padding: 0; /* Remove padding from container */
+}
+
+.platformImage {
+    width: 80px;
+    height: 80px;
+    object-fit: cover;
+    padding: 0;
+}
+
+.linkInputSection {
+    display: flex;
+    gap: 15px;
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.linkInput {
+    flex: 1;
+    padding: 15px 20px;
+    border: 2px solid #e1e5e9;
+    border-radius: 12px;
+    font-size: 16px;
+    background: rgba(255, 255, 255, 0.9);
+}
+
+.submitBtn {
+    padding: 15px 30px;
+    background: linear-gradient(45deg, #34a853, #4285f4);
+    color: white;
+    border: none;
+    border-radius: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.submitBtn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(52, 168, 83, 0.3);
+}
+
+@media (max-width: 768px) {
+    .linkInputSection {
+        flex-direction: column;
+    }
+
+    .socialPlatforms {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}

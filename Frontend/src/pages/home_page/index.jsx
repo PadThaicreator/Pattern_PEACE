@@ -29,6 +29,7 @@ export default function HomePage() {
     }
 
     const parsedUrl = parsePostUrl(postLink);
+    
     if (!parsedUrl) {
       alert('Invalid URL format. Please check the URL and try again.');
       return;

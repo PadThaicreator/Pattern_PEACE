@@ -134,6 +134,7 @@ export function parsePostUrl(url) {
       return null;
     } else if (url.includes('twitter.com') || url.includes('x.com')) {
       const match = url.match(/\/status\/(\d+)/);
+      // alert(match[1]);
       return match ? { type: 'twitter', tweetId: match[1] } : null;
     } else if (url.includes('stackoverflow.com')) {
       const match = url.match(/questions\/(\d+)/);

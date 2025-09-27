@@ -1,6 +1,8 @@
 import styles from '../report_page/Report.module.css';
 
 export default function HistoryPage() {
+
+ 
   return (
     <div className={styles.heroSection}>
       <h2 className={styles.heroTitle}>ประวัติการวิเคราะห์</h2>

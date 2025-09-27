@@ -1,8 +1,11 @@
 
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import styles from './Home.module.css';
+import { parsePostUrl } from '../../services/socialMedia';
 
 export default function HomePage() {
+  const navigate = useNavigate();
   const [postLink, setPostLink] = useState('');
   const [analyzing, setAnalyzing] = useState(false);
   const [selectedPlatform, setSelectedPlatform] = useState(null);
@@ -20,27 +23,32 @@ export default function HomePage() {
       alert('Please Enter Link');
       return;
     }
+    if (!selectedPlatform) {
+      alert('Please select a platform');
+      return;
+    }
 
-    let platform = 'reddit'; // default
-    if (postLink.includes('facebook.com')) platform = 'facebook';
-    else if (postLink.includes('twitter.com') || postLink.includes('x.com')) platform = 'twitter';
-    else if (postLink.includes('stackoverflow.com')) platform = 'stackoverflow';
+    const parsedUrl = parsePostUrl(postLink);
+    if (!parsedUrl) {
+      alert('Invalid URL format. Please check the URL and try again.');
+      return;
+    }
+
+    if (parsedUrl.type !== selectedPlatform) {
+      alert(`The URL provided is not a valid ${selectedPlatform} URL`);
+      return;
+    }
 
     setAnalyzing(true);
-    // Here you would make the API call to analyze the post
-    // For now, we'll just simulate it
-    try {
-      // TODO: Replace with actual API call
-      console.log('Analyzing post:', { postLink, platform });
-      // Navigate to report page after analysis
-      // You might want to pass the results through state management or URL params
-    } catch (error) {
-      console.error('Error analyzing post:', error);
-      alert('Error analyzing post. Please try again.');
-    } finally {
-      setAnalyzing(false);
-      setPostLink('');
-    }
+    
+    // Navigate to result page with the URL parameters
+    navigate('/result', { 
+      state: { 
+        postData: parsedUrl,
+        platform: selectedPlatform,
+        url: postLink
+      }
+    });
   };
 
   const handleKeyPress = (e) => {

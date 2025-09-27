@@ -5,6 +5,7 @@ import LoginPage from "./pages/login_page";
 import RegisterPage from "./pages/register_page";
 import HistoryPage from "./pages/history_page";
 import ReportPage from "./pages/report_page";
+import ResultPage from "./pages/result_page";
 
 import { Routes, Route } from "react-router-dom";
 
@@ -20,6 +21,7 @@ function App() {
         <Route path="/" element={<HomePage />} />
         <Route path="/history" element={<HistoryPage />} />
         <Route path="/report" element={<ReportPage />} />
+        <Route path="/result" element={<ResultPage />} />
       </Route>
     </Routes>
   );

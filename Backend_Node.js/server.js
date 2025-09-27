@@ -6,11 +6,16 @@ require("dotenv").config();
 
 const app = express();
 const authRoutes = require("./routes/auth");
+const userRoutes = require("./routes/userRoutes");
+const reportRoutes = require("./routes/reportRoutes");
 
 app.use(cors());
 app.use(express.json());
 
 app.use("/api/auth", authRoutes);
+app.use("/api", userRoutes);
+app.use("/api", reportRoutes);
+
 
 app.get("/check-db-connection", async (req, res) => {
   try {

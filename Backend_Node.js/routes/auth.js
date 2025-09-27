@@ -7,6 +7,7 @@ const router = express.Router();
 
 router.post("/register", register);
 router.post("/login", login);
+
 // router.get("/dashboard", verifyToken, async (req, res) => {
 //   try {
 //     const user = await User.findById(req.user.id).select("-password"); // ไม่ส่ง password กลับ

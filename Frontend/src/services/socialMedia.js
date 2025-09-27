@@ -16,39 +16,11 @@ export async function fetchFacebookPost(postUrl, email, password) {
 
 export async function fetchRedditPost(postId, subreddit) {
   try {
-    console.log('Fetching Reddit post:', { postId, subreddit });
-    const response = await axios.get(`https://www.reddit.com/r/${subreddit}/comments/${postId}.json`, {
-      headers: {
-        'User-Agent': 'PEACE_Pattern/1.0',
-        'Accept': 'application/json'
-      }
-    });
+    const res = await axios.get(`http://localhost:5000/pull/reddit/${postId}/${subreddit}`)
     
-    console.log('Reddit API response:', response.data);
-    const postData = response.data[0]?.data?.children[0]?.data;
-    if (!postData) {
-      throw new Error('Invalid Reddit API response format');
-    }
-
-    const comments = (response.data[1]?.data?.children || [])
-      .filter(comment => comment.kind === 't1' && comment.data)
-      .map(comment => ({
-        author: comment.data.author,
-        content: comment.data.body
-      }));
-
-    return {
-      platform: 'Reddit',
-      url: `https://www.reddit.com/r/${subreddit}/comments/${postId}`,
-      content: {
-        title: postData.title,
-        text: postData.selftext || postData.title
-      },
-      comments
-    };
+    return res.data ;
   } catch (error) {
-    console.error('Reddit fetch error:', error);
-    throw new Error(`Failed to fetch Reddit post: ${error.message}`);
+    console.error(error)
   }
 }
 
@@ -134,7 +106,6 @@ export function parsePostUrl(url) {
       return null;
     } else if (url.includes('twitter.com') || url.includes('x.com')) {
       const match = url.match(/\/status\/(\d+)/);
-      // alert(match[1]);
       return match ? { type: 'twitter', tweetId: match[1] } : null;
     } else if (url.includes('stackoverflow.com')) {
       const match = url.match(/questions\/(\d+)/);
@@ -142,6 +113,6 @@ export function parsePostUrl(url) {
     }
     return null;
   } catch (error) {
-    return null;
+    return error;
   }
 }

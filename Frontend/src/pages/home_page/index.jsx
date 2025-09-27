@@ -1,21 +1,24 @@
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styles from './Home.module.css';
 import { parsePostUrl } from '../../services/socialMedia';
+import { useSelector } from 'react-redux';
 
 export default function HomePage() {
   const navigate = useNavigate();
   const [postLink, setPostLink] = useState('');
   const [analyzing, setAnalyzing] = useState(false);
   const [selectedPlatform, setSelectedPlatform] = useState(null);
-
+  
   const platforms = [
     { id: 'facebook', name: 'Facebook', icon: '/Logo_Facebook.png' },
     { id: 'reddit', name: 'Reddit', icon: '/Logo_Reddit.jpg' },
     { id: 'twitter', name: 'X', icon: '/Logo_X.jpg' },
     { id: 'stackoverflow', name: 'Stack Overflow', icon: '/Logo_StackOverflow.png' },
   ];
+
+  
 
   const handleSubmit = (e) => {
     e.preventDefault();

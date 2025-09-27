@@ -80,3 +80,12 @@
   border-radius: 4px;
   cursor: pointer;
 }
+
+.codeBlock {
+  background-color: #f6f8fa;
+  padding: 10px;
+  border-radius: 6px;
+  overflow-x: auto;
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 0.95rem;
+}

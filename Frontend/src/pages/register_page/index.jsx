@@ -1,19 +1,74 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import axios from "axios";
 
 export default function RegisterPage() {
-
+    const navigate = useNavigate();
     const [username, setUsername] = useState("");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
+    const [isLoading, setIsLoading] = useState(false);
 
-    const handleRegister = () => {
-        if(!password){
-            alert("Please enter a password")
+    const handleRegister = async () => {
+        
+        if (!username.trim()) {
+            alert("Please enter a username");
+            return;
         }
-        if(password !== confirmPassword){
-            alert("Passwords do not match")
+        if (!email.trim()) {
+            alert("Please enter an email");
+            return;
+        }
+        if (!password) {
+            alert("Please enter a password");
+            return;
+        }
+        if (password !== confirmPassword) {
+            alert("Passwords do not match");
+            return;
+        }
+        if (password.length < 6) {
+            alert("Password must be at least 6 characters long");
+            return;
+        }
+
+        setIsLoading(true);
+        try {
+            console.log('Sending registration request with:', { name: username, email });
+            const response = await axios.post('http://localhost:5000/api/auth/register', {
+                name: username,
+                email: email,
+                password: password
+            }, {
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            console.log('Registration response:', response.data);
+            if (response.data) {
+                alert("Registration successful! Please log in.");
+                navigate('/login');
+            }
+        } catch (error) {
+            console.error('Registration error:', error);
+            if (error.response) {
+                console.error('Error response:', {
+                    data: error.response.data,
+                    status: error.response.status,
+                    headers: error.response.headers
+                });
+                alert(error.response.data.message || "Registration failed. Please check your details.");
+            } else if (error.request) {
+                console.error('No response received');
+                alert("Server is not responding. Please check if the backend server is running.");
+            } else {
+                console.error('Error:', error.message);
+                alert("Registration failed: " + error.message);
+            }
+        } finally {
+            setIsLoading(false);
         }
     }
 

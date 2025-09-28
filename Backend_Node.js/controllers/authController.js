@@ -26,7 +26,10 @@ const login = async (req, res) => {
 
   try {
     // find User
-    const user = await prisma.user.findFirst({ where:{ email:email } });
+    const user = await prisma.user.findFirst({ 
+      where:{ email:email } 
+      
+    });
     if(!user) return res.status(400).json({ message: "User not found" });
 
     // check password

@@ -1,12 +1,21 @@
-import { useEffect, useState } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
-import { ArrowLeft, ExternalLink, MessageCircle, FileText, Loader2, TriangleAlert } from 'lucide-react';
+import { useEffect, useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
+import {
+  ArrowLeft,
+  ExternalLink,
+  MessageCircle,
+  FileText,
+  Loader2,
+  TriangleAlert,
+} from "lucide-react";
 import {
   fetchFacebookPost,
   fetchRedditPost,
   fetchTwitterPost,
   fetchStackOverflowPost,
-} from '../../services/socialMedia';
+} from "../../services/socialMedia";
+import axios from "axios";
+import { config } from "../../config";
 
 export default function ResultPage() {
   const location = useLocation();
@@ -14,37 +23,56 @@ export default function ResultPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [result, setResult] = useState(null);
+  const [historyId , setHistory] = useState();
 
   useEffect(() => {
     if (!location.state) {
-      navigate('/');
+      navigate("/");
       return;
     }
 
-    const { postData, platform, url } = location.state;
+    const { postData, platform, url , historyId } = location.state;
+    setHistory(historyId);
     fetchData(postData, platform, url);
   }, [location.state, navigate]);
+
+  useEffect(()=> {
+    const updata = async () => {
+      if (result?.content?.title) {
+        
+        const payload = {
+          title: result?.content?.title,
+        };
+        await axios.put(`${config.apiBackend}/history/update/${historyId}`, payload);
+      }
+    }
+
+    updata();
+  },[result])
 
   const fetchData = async (postData, platform, url) => {
     try {
       let data;
       switch (platform) {
-        case 'facebook':
+        case "facebook":
           data = await fetchFacebookPost(url);
           break;
-        case 'reddit':
+        case "reddit":
           data = await fetchRedditPost(postData.postId, postData.subreddit);
           break;
-        case 'twitter':
+        case "twitter":
           data = await fetchTwitterPost(postData.tweetId);
           break;
-        case 'stackoverflow':
+        case "stackoverflow":
           data = await fetchStackOverflowPost(postData.questionId);
           break;
         default:
-          throw new Error('Unsupported platform');
+          throw new Error("Unsupported platform");
       }
+      
       setResult(data);
+
+      
     } catch (err) {
       setError(err.message);
     } finally {
@@ -52,7 +80,7 @@ export default function ResultPage() {
     }
   };
 
-  const isCodeBlock = (text) => /<[\s\S]+>/.test(text) && text.includes('\n');
+  const isCodeBlock = (text) => /<[\s\S]+>/.test(text) && text.includes("\n");
 
   const renderText = (text) => {
     if (!text) return null;
@@ -64,8 +92,6 @@ export default function ResultPage() {
       <p className="text-gray-700 leading-relaxed">{text}</p>
     );
   };
-
-
 
   if (loading) {
     return (
@@ -89,8 +115,8 @@ export default function ResultPage() {
           </div>
           <h2 className="text-xl font-semibold text-gray-900 mb-2">Error</h2>
           <p className="text-gray-600 mb-6">{error}</p>
-          <button 
-            onClick={() => navigate('/')}
+          <button
+            onClick={() => navigate("/")}
             className="inline-flex items-center gap-2 px-6 py-3 bg-blue-500 text-white rounded-xl hover:bg-blue-600 transition-colors shadow-lg"
           >
             <ArrowLeft className="w-4 h-4" />
@@ -102,8 +128,8 @@ export default function ResultPage() {
   }
 
   const handlePredict = async (text) => {
-    alert(text)
-  }
+    alert(text);
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-pink-200 via-pink-100 to-orange-100">
@@ -116,8 +142,8 @@ export default function ResultPage() {
                 Results from {result?.platform}
               </span>
             </div>
-            <button 
-              onClick={() => navigate('/')}
+            <button
+              onClick={() => navigate("/")}
               className="inline-flex items-center gap-2 px-4 py-2 text-gray-600 hover:text-gray-900 hover:bg-gray-50 rounded-lg transition-colors"
             >
               <ArrowLeft className="w-4 h-4" />
@@ -135,12 +161,14 @@ export default function ResultPage() {
             <div className="px-6 py-4 border-b border-gray-100 bg-gray-50">
               <div className="flex items-center gap-2">
                 <FileText className="w-5 h-5 text-gray-600" />
-                <h2 className="text-lg font-semibold text-gray-900">Post Content</h2>
+                <h2 className="text-lg font-semibold text-gray-900">
+                  Post Content
+                </h2>
               </div>
             </div>
-            
+
             <div className="p-6 space-y-4">
-              {typeof result?.content === 'string' ? (
+              {typeof result?.content === "string" ? (
                 <div>{renderText(result.content)}</div>
               ) : (
                 <div className="space-y-4">
@@ -152,24 +180,26 @@ export default function ResultPage() {
                       <div className="h-px bg-gray-200 mb-4"></div>
                     </div>
                   )}
-                  <div>{renderText(result?.content?.text || result?.content?.body)}</div>
+                  <div>
+                    {renderText(result?.content?.text || result?.content?.body)}
+                  </div>
                 </div>
               )}
-              
+
               {result?.content?.image && (
                 <div className="mt-4">
-                  <img 
-                    src={result.content.image} 
+                  <img
+                    src={result.content.image}
                     alt="Post content"
                     className="max-w-full h-auto rounded-lg border border-gray-200 shadow-sm"
                   />
                 </div>
               )}
-              
+
               <div className="pt-4 border-t border-gray-200">
-                <a 
-                  href={result?.url} 
-                  target="_blank" 
+                <a
+                  href={result?.url}
+                  target="_blank"
                   rel="noopener noreferrer"
                   className="inline-flex items-center gap-2 text-blue-600 hover:text-blue-800 transition-colors font-medium"
                 >
@@ -190,7 +220,7 @@ export default function ResultPage() {
                 </h2>
               </div>
             </div>
-            
+
             <div className="p-6">
               {!result?.comments?.length ? (
                 <div className="text-center py-12">
@@ -200,23 +230,33 @@ export default function ResultPage() {
               ) : (
                 <div className="space-y-8">
                   {result.comments.map((comment, index) => (
-                    <div key={index} className="border-b border-gray-100 last:border-b-0 pb-8 last:pb-0 ">
+                    <div
+                      key={index}
+                      className="border-b border-gray-100 last:border-b-0 pb-8 last:pb-0 "
+                    >
                       <div>
-                        <div className='flex justify-between'>
+                        <div className="flex justify-between">
                           {comment.author && (
-                          <div className="flex items-center gap-3 mb-4">
-                            <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-sm text-white font-semibold shadow-md">
-                              {comment.author.charAt(0).toUpperCase()}
+                            <div className="flex items-center gap-3 mb-4">
+                              <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-sm text-white font-semibold shadow-md">
+                                {comment.author.charAt(0).toUpperCase()}
+                              </div>
+                              <span className="font-semibold text-gray-900 text-lg">
+                                {comment.author}
+                              </span>
                             </div>
-                            <span className="font-semibold text-gray-900 text-lg">
-                              {comment.author}
-                            </span>
-                          </div>
                           )}
                           <div>
                             {comment.content && (
-                              <div className='bg-red-200  rounded-full p-2 flex items-center justify-center cursor-pointer' onClick={()=> handlePredict(comment.content)}>
-                                <TriangleAlert color='red' size={24} className='w-full h-full' />
+                              <div
+                                className="bg-red-200  rounded-full p-2 flex items-center justify-center cursor-pointer"
+                                onClick={() => handlePredict(comment.content)}
+                              >
+                                <TriangleAlert
+                                  color="red"
+                                  size={24}
+                                  className="w-full h-full"
+                                />
                               </div>
                             )}
                           </div>
@@ -224,16 +264,15 @@ export default function ResultPage() {
                         <div className="ml-0">
                           {renderText(comment.content)}
                           {comment.image && (
-                            <img 
-                              src={comment.image} 
+                            <img
+                              src={comment.image}
                               alt="Comment attachment"
-                              className="mt-4 max-w-full h-auto rounded-lg border border-gray-200 shadow-sm" 
-                              style={{ maxWidth: '450px' }}
+                              className="mt-4 max-w-full h-auto rounded-lg border border-gray-200 shadow-sm"
+                              style={{ maxWidth: "450px" }}
                             />
                           )}
                         </div>
                       </div>
-                      
                     </div>
                   ))}
                 </div>

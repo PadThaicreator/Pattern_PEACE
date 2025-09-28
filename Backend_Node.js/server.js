@@ -9,6 +9,7 @@ const authRoutes = require("./routes/auth");
 const userRoutes = require("./routes/userRoutes");
 const reportRoutes = require("./routes/reportRoutes");
 const pullApiRoutes = require("./routes/pullApiRoutes");
+const historyRoutes = require("./routes/postRoutes")
 app.use(cors());
 app.use(express.json());
 
@@ -16,6 +17,7 @@ app.use("/api/auth", authRoutes);
 app.use("/api", userRoutes);
 app.use("/api", reportRoutes);
 app.use("/pull", pullApiRoutes);
+app.use("/history", historyRoutes);
 
 app.get("/check-db-connection", async (req, res) => {
   try {

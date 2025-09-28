@@ -19,7 +19,7 @@ model User {
   email     String      @unique
   password  String
   reports   ReportHistory[]
-
+  postHistory PostHistory[]
   createdAt DateTime? @default(now())
   updatedAt DateTime? @updatedAt
 }
@@ -34,7 +34,12 @@ model ReportHistory {
 }
 model PostHistory {
   id        String      @id @default(auto()) @map("_id") @db.ObjectId
-  link      String?
+  url       String?
+  platform  String?
+  postData  Json?
+  title     String?
+  user      User        @relation(fields: [userId], references: [id])
+  userId    String  @db.ObjectId
   createdAt DateTime? @default(now())
 }
 

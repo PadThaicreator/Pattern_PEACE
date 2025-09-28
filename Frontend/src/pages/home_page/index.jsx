@@ -4,13 +4,17 @@ import { useNavigate } from 'react-router-dom';
 import styles from './Home.module.css';
 import { parsePostUrl } from '../../services/socialMedia';
 import { useSelector } from 'react-redux';
+import axios from 'axios';
+import { config } from '../../config';
 
 export default function HomePage() {
   const navigate = useNavigate();
   const [postLink, setPostLink] = useState('');
   const [analyzing, setAnalyzing] = useState(false);
   const [selectedPlatform, setSelectedPlatform] = useState(null);
-  
+  const user = useSelector((state)=>state.user.user)
+
+
   const platforms = [
     { id: 'facebook', name: 'Facebook', icon: '/Logo_Facebook.png' },
     { id: 'reddit', name: 'Reddit', icon: '/Logo_Reddit.jpg' },
@@ -20,7 +24,7 @@ export default function HomePage() {
 
   
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (!postLink.trim()) {
       alert('Please Enter Link');
@@ -44,13 +48,29 @@ export default function HomePage() {
     }
 
     setAnalyzing(true);
+
+
+
+      const payload = {
+        userId : user.id,
+        postData: parsedUrl,
+        platform: selectedPlatform,
+        url: postLink
+      }
+
+      const res = await axios.post(`${config.apiBackend}/history/create`, payload)
+      
+ 
+
+
     
     // Navigate to result page with the URL parameters
     navigate('/result', { 
       state: { 
         postData: parsedUrl,
         platform: selectedPlatform,
-        url: postLink
+        url: postLink,
+        historyId : res.data?.id
       }
     });
   };

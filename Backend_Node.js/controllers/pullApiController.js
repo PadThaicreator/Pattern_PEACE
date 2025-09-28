@@ -1,4 +1,39 @@
-const axios = require('axios');
+const { PrismaClient } = require("@prisma/client");
+const prisma = new PrismaClient();
+const bcrypt = require("bcryptjs") ;
+const jwt = require("jsonwebtoken");
+const axios = require("axios")
+
+const pullTwitterPost = async (req, res) => {
+  console.log(process.env.BEARER_TOKEN)
+  try {
+    const tweetId = req.params.id;
+    const tweetRes = await axios.get(`https://api.twitter.com/2/tweets/${tweetId}`, {
+      headers: { Authorization: `Bearer ${process.env.BEARER_TOKEN}` },
+      params: { 'tweet.fields': 'created_at,author_id,public_metrics' }
+    });
+
+    const repliesRes = await axios.get('https://api.twitter.com/2/tweets/search/recent', {
+      headers: { Authorization: `Bearer ${process.env.BEARER_TOKEN}` },
+      params: {
+        query: `conversation_id:${tweetId}`,
+        'tweet.fields': 'author_id,created_at'
+      }
+    });
+
+    res.send({
+      platform: 'X (Twitter)',
+      url: `https://twitter.com/user/status/${tweetId}`,
+      content: tweetRes.data.data,
+      comments: repliesRes.data.data || []
+    })
+
+   
+    
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
 
 function extractImageUrlFromText(text) {
   // จับ URL พร้อม query params
@@ -7,9 +42,12 @@ function extractImageUrlFromText(text) {
   return matches ? matches[0].replace(/&amp;/g, '&') : null; // แปลง &amp; เป็น &
 }
 
-async function fetchRedditPost(postId, subreddit) {
+
+const  pullRedditPost = async (req, res) => {
   try {
-    console.log('Fetching Reddit post:', { postId, subreddit });
+    const postId = req.params.id;
+    const subreddit = req.params.subreddit
+    
     const response = await axios.get(`https://www.reddit.com/r/${subreddit}/comments/${postId}.json`, {
       headers: {
         'User-Agent': 'PEACE_Pattern/1.0',
@@ -40,9 +78,12 @@ const comments = (response.data[1]?.data?.children || [])
   .filter(comment => comment.kind === 't1' && comment.data)
   .map(comment => {
     const image = extractImageUrlFromText(comment.data.body);
+    const rawContent = comment.data.body;
+    const normalizedContent = rawContent.replace(/&amp;/g, '&');
+    const contents = image ? normalizedContent.replace(image, "").trim() : normalizedContent;
     return {
       author: comment.data.author,
-      content: comment.data.body,
+      content: contents ,
       image // จะได้ full preview link
     };
   });
@@ -58,8 +99,8 @@ const comments = (response.data[1]?.data?.children || [])
       comments
     };
 
-    console.log(result);
-    return result;
+    // console.log(result);
+    res.json(result)
 
   } catch (error) {
     console.error('Reddit fetch error:', error);
@@ -67,5 +108,7 @@ const comments = (response.data[1]?.data?.children || [])
   }
 }
 
-// ทดลองเรียก
-fetchRedditPost("1nrenca", "Fauxmoi");
+
+// https://www.reddit.com/r/ThailandTourism/comments/1nrq3kh/thai_peoples_are_crazy_about_taking_loan/
+
+module.exports = {pullTwitterPost , pullRedditPost};

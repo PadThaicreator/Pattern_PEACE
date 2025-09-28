@@ -1,11 +1,19 @@
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import styles from './Home.module.css';
+import { parsePostUrl } from '../../services/socialMedia';
+import { useSelector } from 'react-redux';
+import axios from 'axios';
+import { config } from '../../config';
 
 export default function HomePage() {
+  const navigate = useNavigate();
   const [postLink, setPostLink] = useState('');
   const [analyzing, setAnalyzing] = useState(false);
   const [selectedPlatform, setSelectedPlatform] = useState(null);
+  const user = useSelector((state)=>state.user.user)
+
 
   const platforms = [
     { id: 'facebook', name: 'Facebook', icon: '/Logo_Facebook.png' },
@@ -14,33 +22,57 @@ export default function HomePage() {
     { id: 'stackoverflow', name: 'Stack Overflow', icon: '/Logo_StackOverflow.png' },
   ];
 
-  const handleSubmit = (e) => {
+  
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (!postLink.trim()) {
       alert('Please Enter Link');
       return;
     }
+    if (!selectedPlatform) {
+      alert('Please select a platform');
+      return;
+    }
 
-    let platform = 'reddit'; // default
-    if (postLink.includes('facebook.com')) platform = 'facebook';
-    else if (postLink.includes('twitter.com') || postLink.includes('x.com')) platform = 'twitter';
-    else if (postLink.includes('stackoverflow.com')) platform = 'stackoverflow';
+    const parsedUrl = parsePostUrl(postLink);
+    
+    if (!parsedUrl) {
+      alert('Invalid URL format. Please check the URL and try again.');
+      return;
+    }
+
+    if (parsedUrl.type !== selectedPlatform) {
+      alert(`The URL provided is not a valid ${selectedPlatform} URL`);
+      return;
+    }
 
     setAnalyzing(true);
-    // Here you would make the API call to analyze the post
-    // For now, we'll just simulate it
-    try {
-      // TODO: Replace with actual API call
-      console.log('Analyzing post:', { postLink, platform });
-      // Navigate to report page after analysis
-      // You might want to pass the results through state management or URL params
-    } catch (error) {
-      console.error('Error analyzing post:', error);
-      alert('Error analyzing post. Please try again.');
-    } finally {
-      setAnalyzing(false);
-      setPostLink('');
-    }
+
+
+
+      const payload = {
+        userId : user.id,
+        postData: parsedUrl,
+        platform: selectedPlatform,
+        url: postLink
+      }
+
+      const res = await axios.post(`${config.apiBackend}/history/create`, payload)
+      
+ 
+
+
+    
+    // Navigate to result page with the URL parameters
+    navigate('/result', { 
+      state: { 
+        postData: parsedUrl,
+        platform: selectedPlatform,
+        url: postLink,
+        historyId : res.data?.id
+      }
+    });
   };
 
   const handleKeyPress = (e) => {

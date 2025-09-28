@@ -1,0 +1,91 @@
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+
+.backButton {
+  padding: 0.5rem 1rem;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.backButton:hover {
+  background-color: #0056b3;
+}
+
+.content {
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  padding: 2rem;
+}
+
+.postContent {
+  margin-bottom: 2rem;
+  padding-bottom: 2rem;
+  border-bottom: 1px solid #eee;
+}
+
+.postContent a {
+  color: #007bff;
+  text-decoration: none;
+}
+
+.postContent a:hover {
+  text-decoration: underline;
+}
+
+.comments {
+  margin-top: 2rem;
+}
+
+.comment {
+  margin-bottom: 1rem;
+  padding: 1rem;
+  background-color: #f8f9fa;
+  border-radius: 4px;
+}
+
+.comment strong {
+  color: #495057;
+}
+
+.loading,
+.error {
+  text-align: center;
+  padding: 2rem;
+}
+
+.error {
+  color: #dc3545;
+}
+
+.error button {
+  margin-top: 1rem;
+  padding: 0.5rem 1rem;
+  background-color: #dc3545;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.codeBlock {
+  background-color: #f6f8fa;
+  padding: 10px;
+  border-radius: 6px;
+  overflow-x: auto;
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 0.95rem;
+}

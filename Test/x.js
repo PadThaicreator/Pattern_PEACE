@@ -9,7 +9,7 @@ async function getTweetAndReplies(tweetId) {
       headers: { Authorization: `Bearer ${BEARER_TOKEN}` },
       params: { 'tweet.fields': 'created_at,author_id,public_metrics' }
     });
-
+   
     const tweet = tweetRes.data.data;
     console.log('--- TWEET ---');
     console.log(tweet);

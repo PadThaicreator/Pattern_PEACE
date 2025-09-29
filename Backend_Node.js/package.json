@@ -7,7 +7,9 @@
   "type": "commonjs",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "concurrently \"node --watch server.js\" \"cd ../Model && uvicorn api:app --reload --port 8000\""
+
   },
   "dependencies": {
     "@prisma/client": "^6.15.0",
@@ -19,5 +21,8 @@
     "express": "^5.1.0",
     "jsonwebtoken": "^9.0.2",
     "mongodb": "^6.19.0"
+  },
+  "devDependencies": {
+    "concurrently": "^9.2.1"
   }
 }

@@ -7,6 +7,8 @@ from tensorflow.keras.layers import Input, Embedding, SpatialDropout1D, Bidirect
 from tensorflow.keras.preprocessing.sequence import pad_sequences
 import tensorflow.keras.backend as K
 from datasets import load_dataset
+import sys
+sys.stdout.reconfigure(encoding='utf-8')
 
 # ---------------- Parameters ----------------
 MAX_NUM_WORDS = 20000
@@ -66,9 +68,10 @@ def predict_texts(texts):
     preds = model.predict(seqs)
     for t, p in zip(texts, preds):
         res = dict(zip(dataset["train"].features["labels"].feature.names,[round(float(x),4) for x in p]))
-        print("\nText:", t)
-        print("Pred:", res)
+        # print("\nText:", t)
+        # print("Pred:", res)
+        return res
 
 # Example
-sample_texts = ["You are so fucking beautiful, I can’t believe it." , "You think you’re so fucking beautiful, but you’re not."]
-predict_texts(sample_texts)
+# sample_texts = ["You are so fucking beautiful, I can’t believe it." , "You think you’re so fucking beautiful, but you’re not."]
+# predict_texts(sample_texts)

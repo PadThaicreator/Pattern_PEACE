@@ -1,5 +1,5 @@
 
-import { useEffect, useState } from 'react';
+import {  useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styles from './Home.module.css';
 import { parsePostUrl } from '../../services/socialMedia';
@@ -17,14 +17,15 @@ export default function HomePage() {
 
   const platforms = [
     { id: 'facebook', name: 'Facebook', icon: '/Logo_Facebook.png' },
-    { id: 'reddit', name: 'Reddit', icon: '/Logo_Reddit.jpg' },
-    { id: 'twitter', name: 'X', icon: '/Logo_X.jpg' },
+    { id: 'reddit', name: 'Reddit', icon: '/Logo_Reddit.png' },
+    { id: 'twitter', name: 'X', icon: '/Logo_X.png' },
     { id: 'stackoverflow', name: 'Stack Overflow', icon: '/Logo_StackOverflow.png' },
   ];
 
   
 
   const handleSubmit = async (e) => {
+    console.log(analyzing)
     e.preventDefault();
     if (!postLink.trim()) {
       alert('Please Enter Link');

@@ -38,6 +38,11 @@ export default function ResultPage() {
 
   useEffect(()=> {
     const updata = async () => {
+
+      if(!historyId){
+        return;
+      }
+      
       if (result?.content?.title) {
         
         const payload = {

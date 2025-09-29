@@ -7,6 +7,8 @@ from tensorflow.keras.layers import Input, Embedding, SpatialDropout1D, Bidirect
 from tensorflow.keras.preprocessing.sequence import pad_sequences
 import tensorflow.keras.backend as K
 from datasets import load_dataset
+import sys
+sys.stdout.reconfigure(encoding='utf-8')
 
 # ---------------- Parameters ----------------
 MAX_NUM_WORDS = 20000

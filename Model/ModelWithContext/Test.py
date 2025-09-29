@@ -4,6 +4,8 @@ import tensorflow as tf
 from tensorflow.keras.preprocessing.sequence import pad_sequences
 from tensorflow.keras.layers import Layer, Input, Embedding, SpatialDropout1D, Conv1D, GlobalMaxPooling1D, Bidirectional, LSTM, Dense, Dropout, Concatenate
 from tensorflow.keras.models import Model
+import sys
+sys.stdout.reconfigure(encoding='utf-8')
 
 
 BASE_DIR = os.path.dirname(__file__)  

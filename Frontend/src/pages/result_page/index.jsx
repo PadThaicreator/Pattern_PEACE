@@ -16,6 +16,8 @@ import {
 } from "../../services/socialMedia";
 import axios from "axios";
 import { config } from "../../config";
+import Swal from "sweetalert2";
+import { useSelector } from "react-redux";
 
 export default function ResultPage() {
   const location = useLocation();
@@ -24,6 +26,7 @@ export default function ResultPage() {
   const [error, setError] = useState(null);
   const [result, setResult] = useState(null);
   const [historyId , setHistory] = useState();
+  const user = useSelector((state) => state.user.user)
 
   useEffect(() => {
     if (!location.state) {
@@ -133,7 +136,28 @@ export default function ResultPage() {
   }
 
   const handlePredict = async (text) => {
-    alert(text);
+    try {
+      const payload = {
+        comment : text,
+        reporterId :  user.id
+      }
+      const res = await axios.post(`${config.apiBackend}/api/createReport` , payload)
+      const data = res.data
+      if(data){
+        Swal.fire({
+                  title: "Predict Success",
+                  text : `This comment is ${data.report.typeOfReport}` ,
+                  icon: "success",
+        });
+      }
+    } catch (error) {
+      Swal.fire({
+              title: "Predict Failed",
+              text: "Model or Backend Error",
+              icon: "warning",
+      });
+      console.log(error.message)
+    }
   };
 
   return (

@@ -2,7 +2,7 @@ const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
 
 const createReport = async ( req, res ) => {
-    const { reporterId, typeOfReport, description } = req.body;
+    const { reporterId, typeOfReport, comment } = req.body;
 
     try {
         const user = await prisma.user.findUnique({
@@ -16,7 +16,7 @@ const createReport = async ( req, res ) => {
             data : {
                 reporterId : reporterId,
                 typeOfReport : typeOfReport,
-                description : description 
+                comment : comment 
             }
         });
         res.status(201).json({ message: "Comment Reported!", report });

@@ -5,14 +5,26 @@ const jwt = require("jsonwebtoken");
 const axios = require("axios")
 
 const pullTwitterPost = async (req, res) => {
-  console.log(process.env.BEARER_TOKEN)
   try {
     const tweetId = req.params.id;
+
+    // ดึง tweet หลัก
     const tweetRes = await axios.get(`https://api.twitter.com/2/tweets/${tweetId}`, {
       headers: { Authorization: `Bearer ${process.env.BEARER_TOKEN}` },
       params: { 'tweet.fields': 'created_at,author_id,public_metrics' }
     });
 
+    const tweetData = tweetRes.data.data;
+
+    // Clean text ของ tweet หลัก
+    const cleanedTweetText = tweetData.text
+      .replace(/@\w+/g, '')           // ลบ mentions
+      .replace(/https?:\/\/t\.co\/\w+/g, '') // ลบ short URLs
+      .trim();
+
+    const content = { ...tweetData, text: cleanedTweetText };
+
+    // ดึง replies
     const repliesRes = await axios.get('https://api.twitter.com/2/tweets/search/recent', {
       headers: { Authorization: `Bearer ${process.env.BEARER_TOKEN}` },
       params: {
@@ -21,19 +33,28 @@ const pullTwitterPost = async (req, res) => {
       }
     });
 
+    const comments = (repliesRes.data.data || []).map(comment => {
+      const cleanedText = comment.text
+        .replace(/@\w+/g, '')             // ลบ mentions
+        .replace(/https?:\/\/t\.co\/\w+/g, '') // ลบ short URLs
+        .trim();
+      return { ...comment, text: cleanedText };
+    });
+
+    // ส่ง response
     res.send({
       platform: 'X (Twitter)',
       url: `https://twitter.com/user/status/${tweetId}`,
-      content: tweetRes.data.data,
-      comments: repliesRes.data.data || []
-    })
+      content,
+      comments
+    });
 
-   
-    
   } catch (error) {
+    console.error(error);
     res.status(500).json({ message: error.message });
   }
 };
+
 
 function extractImageUrlFromText(text) {
   // จับ URL พร้อม query params

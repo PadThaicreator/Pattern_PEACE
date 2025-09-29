@@ -66,9 +66,10 @@ def predict_texts(texts):
     preds = model.predict(seqs)
     for t, p in zip(texts, preds):
         res = dict(zip(dataset["train"].features["labels"].feature.names,[round(float(x),4) for x in p]))
-        print("\nText:", t)
-        print("Pred:", res)
+        # print("\nText:", t)
+        # print("Pred:", res)
+        return res
 
 # Example
-sample_texts = ["You are so fucking beautiful, I can’t believe it." , "You think you’re so fucking beautiful, but you’re not."]
-predict_texts(sample_texts)
+# sample_texts = ["You are so fucking beautiful, I can’t believe it." , "You think you’re so fucking beautiful, but you’re not."]
+# predict_texts(sample_texts)

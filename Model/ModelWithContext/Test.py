@@ -79,11 +79,11 @@ def predict_texts(texts):
     preds = loaded_model.predict(X)
     for t, p in zip(texts, preds):
 
-        # return dict(zip(label_cols, [round(float(x),4) for x in p]))
-        print("\nText:", t)
-        print("Pred:", dict(zip(label_cols, [round(float(x),4) for x in p])))
+        return dict(zip(label_cols, [round(float(x),4) for x in p]))
+        # print("\nText:", t)
+        # print("Pred:", dict(zip(label_cols, [round(float(x),4) for x in p])))
 
 # ---------------------------
 # Test example
-sample_texts = ["You are so fucking beautiful, I can’t believe it." , "You think you’re so fucking beautiful, but you’re not."]
-predict_texts(sample_texts)
+# sample_texts = ["You are so fucking beautiful, I can’t believe it." , "You think you’re so fucking beautiful, but you’re not." , "You're so dumb, I can’t believe you wrote that." , "Every word you say makes you look like the most pathetic human alive." , "You’re nothing but trash, the world would be better without you."]
+# predict_texts(sample_texts)

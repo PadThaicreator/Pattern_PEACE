@@ -28,8 +28,8 @@ model ReportHistory {
   id            String      @id @default(auto()) @map("_id") @db.ObjectId
   reporter      User        @relation(fields: [reporterId], references: [id])
   reporterId    String  @db.ObjectId
-  typeOfReport  ReportType
-  description   String?
+  typeOfReport  ReportType[]
+  comment       String?
   createdAt     DateTime?   @default(now())
 }
 model PostHistory {
@@ -44,8 +44,9 @@ model PostHistory {
 }
 
 enum ReportType {
-  SPAM
-  HARASSMENT
-  INAPPROPRIATE
-  OTHER
+  TOXIC
+  OBSCENE
+  THREAT
+  INSULT
+  IDENTITY_HATE
 }

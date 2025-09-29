@@ -28,6 +28,7 @@ const createHistory = async (req, res) => {
 
 const getHistory = async(req,res) =>{
     try {
+        const userId = req.params.id
         const user = await prisma.user.findFirst({where : {id : userId}});
         if(!user){
             res.status(404).json({message : "User Not Found"})

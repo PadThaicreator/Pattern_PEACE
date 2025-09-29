@@ -12,6 +12,29 @@ export default function ReportPage() {
   const [selectedReport, setSelectedReport] = useState(null);
   const user = useSelector((state) => state.user.user);
 
+  const KNOWN_TYPES = ['TOXIC','OBSCENE','THREAT','INSULT','IDENTITY_HATE'];
+  const toTitleCaseEnum = (text) => {
+    if (!text) return '';
+    return text
+      .toString()
+      .replaceAll('_', ' ')
+      .toLowerCase()
+      .replace(/\b\w/g, (c) => c.toUpperCase());
+  };
+  const formatReportTypes = (value) => {
+    if (Array.isArray(value)) {
+      return value.map(toTitleCaseEnum).join(', ');
+    }
+    if (typeof value === 'string') {
+      const found = KNOWN_TYPES.filter((t) => value.includes(t));
+      if (found.length > 0) {
+        return found.map(toTitleCaseEnum).join(', ');
+      }
+      return toTitleCaseEnum(value);
+    }
+    return '';
+  };
+
   useEffect(() => {
     if (!user || !user.id) return;
     fetchReports(user.id);
@@ -54,11 +77,6 @@ export default function ReportPage() {
 
   return (
     <div>
-      <div className={styles.heroSection}>
-        <h2 className={styles.heroTitle}>รายงานผล</h2>
-        <p className={styles.heroSubtitle}>สรุปผลการรายงานของผู้ใช้</p>
-      </div>
-
       {selectedReport ? (
         <div className={styles.postResult}>
           <button className={styles.backBtn} onClick={() => setSelectedReport(null)}>
@@ -68,19 +86,19 @@ export default function ReportPage() {
           <div className={styles.postHeader}>
             <div className={styles.authorAvatar}></div>
             <div className={styles.authorInfo}>
-              <h3>Report Type: {selectedReport.typeOfReport}</h3>
+              <h3>Report Type: {formatReportTypes(selectedReport.typeOfReport)}</h3>
               <div className={styles.postMeta}>Created: {formatDate(selectedReport.createdAt)}</div>
             </div>
           </div>
 
           <div className={styles.postContent}>
-            <h2 className={styles.postTitle}>รายละเอียด</h2>
+            <h2 className={styles.postTitle}>Comment:</h2>
             <p className={styles.postText}>{selectedReport.comment || 'No additional comment'}</p>
           </div>
         </div>
       ) : (
         <div className={`${styles.postResult} flex flex-col gap-3`}>
-          <div className="text-2xl font-bold">รายการรายงานของคุณ</div>
+          <div className="text-2xl font-bold">List of your report</div>
 
           {error && (
             <div className="text-red-500 text-sm">{error}</div>
@@ -88,17 +106,29 @@ export default function ReportPage() {
 
           {reports.length > 0 ? (
             reports.map((report) => (
-              <button
-                key={report.id}
-                className="text-left p-4 rounded-md bg-white border hover:bg-gray-50"
-                onClick={() => setSelectedReport(report)}
-              >
-                <div className="font-semibold">{Array.isArray(report.typeOfReport) ? report.typeOfReport.join(', ') : report.typeOfReport}</div>
-                <div className="text-sm text-gray-600">{formatDate(report.createdAt)}</div>
-                {report.comment && (
-                  <div className="text-sm mt-1 line-clamp-2">{report.comment}</div>
-                )}
-              </button>
+              <div key={report.id} className="bg-white shadow-md p-4 rounded-lg flex flex-col gap-2">
+                <div className="flex justify-between">
+                  <div className="font-semibold">
+                    {formatReportTypes(report.typeOfReport)}
+                  </div>
+                  <div>
+                    <div className="bg-blue-400 p-2 text-white rounded-xl text-[14px]">
+                      {formatDate(report.createdAt)}
+                    </div>
+                  </div>
+                </div>
+                <div className="text-sm text-gray-600 mt-1">
+                  {report.comment || 'No additional comment'}
+                </div>
+                <div className="flex justify-end mt-2">
+                  <button
+                    className="text-blue-400"
+                    onClick={() => setSelectedReport(report)}
+                  >
+                    View Detail
+                  </button>
+                </div>
+              </div>
             ))
           ) : (
             <div className={styles.postResult}>

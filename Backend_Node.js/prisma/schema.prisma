@@ -43,10 +43,10 @@ model PostHistory {
   createdAt DateTime? @default(now())
 }
 
-// enum ReportType {
-//   TOXIC
-//   OBSCENE
-//   THREAT
-//   INSULT
-//   IDENTITY_HATE
-// }
+enum ReportType {
+  TOXIC
+  OBSCENE
+  THREAT
+  INSULT
+  IDENTITY_HATE
+}

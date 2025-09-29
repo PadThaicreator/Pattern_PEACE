@@ -1,53 +1,110 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import styles from './Report.module.css';
+import api from '../../api';
+import { config } from '../../config';
+import { useSelector } from 'react-redux';
+import { formatDate } from '../../utility/formatTime';
 
 export default function ReportPage() {
-  const [selectedPost, setSelectedPost] = useState(null);
+  const [reports, setReports] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState('');
+  const [selectedReport, setSelectedReport] = useState(null);
+  const user = useSelector((state) => state.user.user);
+
+  useEffect(() => {
+    if (!user || !user.id) return;
+    fetchReports(user.id);
+  }, [user?.id]);
+
+  const fetchReports = async (reporterId) => {
+    try {
+      setIsLoading(true);
+      setError('');
+      const res = await api.get(`/api/reports/${encodeURIComponent(reporterId)}`);
+      setReports(res.data || []);
+    } catch (err) {
+      const backendMsg = err?.response?.data?.message || err?.message || 'Unknown error';
+      console.error('Failed to load reports', backendMsg);
+      if (err.response && err.response.status === 404) {
+        setReports([]);
+      } else {
+        setError(`Failed to load reports: ${backendMsg}`);
+      }
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  if (!user || !user.id) {
+    return (
+      <div className={styles.heroSection}>
+        <div className={`${styles.postResult} !bg-gray-100`}>Waiting for user...</div>
+      </div>
+    );
+  }
+
+  if (isLoading) {
+    return (
+      <div className={styles.heroSection}>
+        <div className={`${styles.postResult} !bg-gray-100`}>Loading reports...</div>
+      </div>
+    );
+  }
 
   return (
     <div>
       <div className={styles.heroSection}>
         <h2 className={styles.heroTitle}>รายงานผล</h2>
-        <p className={styles.heroSubtitle}>สรุปผลการวิเคราะห์โพสต์ทั้งหมด</p>
+        <p className={styles.heroSubtitle}>สรุปผลการรายงานของผู้ใช้</p>
       </div>
 
-      {selectedPost ? (
+      {selectedReport ? (
         <div className={styles.postResult}>
-          <button className={styles.backBtn} onClick={() => setSelectedPost(null)}>
+          <button className={styles.backBtn} onClick={() => setSelectedReport(null)}>
             ← กลับ
           </button>
+
           <div className={styles.postHeader}>
             <div className={styles.authorAvatar}></div>
             <div className={styles.authorInfo}>
-              <h3>{selectedPost.author}</h3>
-              <div className={styles.postMeta}>
-                {selectedPost.platform} • {selectedPost.date}
-              </div>
+              <h3>Report Type: {selectedReport.typeOfReport}</h3>
+              <div className={styles.postMeta}>Created: {formatDate(selectedReport.createdAt)}</div>
             </div>
           </div>
 
           <div className={styles.postContent}>
-            <h2 className={styles.postTitle}>{selectedPost.title}</h2>
-            <p className={styles.postText}>{selectedPost.content}</p>
+            <h2 className={styles.postTitle}>รายละเอียด</h2>
+            <p className={styles.postText}>{selectedReport.comment || 'No additional comment'}</p>
           </div>
-
-          {selectedPost.comments && (
-            <div className={styles.commentsSection}>
-              <h3 className={styles.commentsTitle}>ความคิดเห็น</h3>
-              <div id="commentsList">
-                {selectedPost.comments.map((comment, index) => (
-                  <div key={index} className={styles.comment}>
-                    <div className={styles.commentAuthor}>{comment.author}</div>
-                    <div className={styles.commentText}>{comment.text}</div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
         </div>
       ) : (
-        <div className={styles.postResult}>
-          <div className="text-center">เลือกโพสต์ที่ต้องการดูรายงาน</div>
+        <div className={`${styles.postResult} flex flex-col gap-3`}>
+          <div className="text-2xl font-bold">รายการรายงานของคุณ</div>
+
+          {error && (
+            <div className="text-red-500 text-sm">{error}</div>
+          )}
+
+          {reports.length > 0 ? (
+            reports.map((report) => (
+              <button
+                key={report.id}
+                className="text-left p-4 rounded-md bg-white border hover:bg-gray-50"
+                onClick={() => setSelectedReport(report)}
+              >
+                <div className="font-semibold">{Array.isArray(report.typeOfReport) ? report.typeOfReport.join(', ') : report.typeOfReport}</div>
+                <div className="text-sm text-gray-600">{formatDate(report.createdAt)}</div>
+                {report.comment && (
+                  <div className="text-sm mt-1 line-clamp-2">{report.comment}</div>
+                )}
+              </button>
+            ))
+          ) : (
+            <div className={styles.postResult}>
+              <div className="text-center">ยังไม่มีรายการรายงาน</div>
+            </div>
+          )}
         </div>
       )}
     </div>

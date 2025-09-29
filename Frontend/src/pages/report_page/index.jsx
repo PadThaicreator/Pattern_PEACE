@@ -54,10 +54,10 @@ export default function ReportPage() {
 
   return (
     <div>
-      <div className={styles.heroSection}>
+      {/* <div className={styles.heroSection}>
         <h2 className={styles.heroTitle}>รายงานผล</h2>
         <p className={styles.heroSubtitle}>สรุปผลการรายงานของผู้ใช้</p>
-      </div>
+      </div> */}
 
       {selectedReport ? (
         <div className={styles.postResult}>

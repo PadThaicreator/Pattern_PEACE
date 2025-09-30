@@ -59,4 +59,21 @@ const getAllReportById = async (req, res) => {
     }
 };
 
-module.exports = { createReport, getAllReport, getAllReportById };
+const getReportByType = async (req,res) =>{
+    try {
+        const type = req.params.type
+        
+        const data = await prisma.reportHistory.findMany({
+            where : {
+                typeOfReport : {
+                    has: type.toUpperCase() 
+                }
+            }
+        })
+        res.json(data);
+    } catch (error) {
+        res.status(500).json({message : error.message})
+    }
+}
+
+module.exports = { createReport, getAllReport, getAllReportById , getReportByType};

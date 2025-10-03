@@ -6,6 +6,7 @@ import RegisterPage from "./pages/register_page";
 import HistoryPage from "./pages/history_page";
 import ReportPage from "./pages/report_page";
 import ResultPage from "./pages/result_page";
+import DashboardPage from "./pages/dashboard_page";
 
 import { Routes, Route } from "react-router-dom";
 import AuthRoute from "./authRoute";
@@ -23,6 +24,7 @@ function App() {
           <Route path="/" element={<HomePage />} />
           <Route path="/history" element={<HistoryPage />} />
           <Route path="/report" element={<ReportPage />} />
+          <Route path="/dashboard" element={<DashboardPage />} />
           <Route path="/result" element={<ResultPage />} />
         </Route>
       </Route>

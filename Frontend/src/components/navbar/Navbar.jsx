@@ -14,6 +14,7 @@ const Navbar = () => {
     { id: '/', label: 'Home', path: '/' },
     { id: 'history', label: 'History', path: '/history' },
     { id: 'report', label: 'Report', path: '/report' },
+    { id: 'dashboard', label: 'Dashboard', path: '/dashboard' },
   ];
 
   const user = useSelector((state)=> state.user.user)

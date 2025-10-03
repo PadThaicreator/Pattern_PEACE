@@ -1,6 +1,7 @@
 
 const { PrismaClient } = require("@prisma/client");
-const { axios } = require("axios");
+const axios = require('axios'); // ต้อง import มาแบบนี้
+
 const prisma = new PrismaClient();
 
 const createReport = async (req, res) => {

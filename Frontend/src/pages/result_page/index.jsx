@@ -27,14 +27,14 @@ export default function ResultPage() {
   const [result, setResult] = useState(null);
   const [historyId , setHistory] = useState();
   const user = useSelector((state) => state.user.user)
-
+  const { postData, platform, url  } = location.state;
   useEffect(() => {
     if (!location.state) {
       navigate("/");
       return;
     }
 
-    const { postData, platform, url , historyId } = location.state;
+    const { historyId } =  location.state;
     setHistory(historyId);
     fetchData(postData, platform, url);
   }, [location.state, navigate]);
@@ -139,7 +139,8 @@ export default function ResultPage() {
     try {
       const payload = {
         comment : text,
-        reporterId :  user.id
+        reporterId :  user.id,
+        platform : platform
       }
       const res = await axios.post(`${config.apiBackend}/api/createReport` , payload)
       const data = res.data

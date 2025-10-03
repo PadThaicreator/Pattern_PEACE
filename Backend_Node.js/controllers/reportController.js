@@ -3,7 +3,7 @@ const { default: axios } = require("axios");
 const prisma = new PrismaClient();
 
 const createReport = async ( req, res ) => {
-    const { reporterId, typeOfReport, comment } = req.body;
+    const { reporterId, typeOfReport, comment , platform } = req.body;
 
     try {
         const user = await prisma.user.findUnique({
@@ -24,7 +24,8 @@ const createReport = async ( req, res ) => {
             data : {
                 reporterId : reporterId,
                 typeOfReport : normalizedTypes,
-                comment : comment 
+                comment : comment,
+                platform : platform
             }
         });
         res.status(201).json({ message: "Comment Reported!", report });

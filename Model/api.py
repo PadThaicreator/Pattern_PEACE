@@ -84,7 +84,7 @@ def hello(comment : str):
         # รวม fixed + top3 พร้อมเปลี่ยนชื่อ
         result = [{"label": label_map[fixed_label], "score": fixed_score}]
         result += [{"label": label_map[k], "score": v} for k, v in top3_labels]
-
+        print(result)
         # แปลงเป็น JSON
         json_result = json.dumps(result, ensure_ascii=False, indent=2)
         return json.loads(json_result)

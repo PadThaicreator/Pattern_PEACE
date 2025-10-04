@@ -5,7 +5,7 @@ const axios = require('axios'); // ต้อง import มาแบบนี้
 const prisma = new PrismaClient();
 
 const createReport = async (req, res) => {
-  const { reporterId, comment } = req.body;
+  const { reporterId, comment , platform } = req.body;
 
   try {
     const user = await prisma.user.findUnique({
@@ -29,7 +29,7 @@ const createReport = async (req, res) => {
         // ฟิลเตอร์ TOXIC ตามเงื่อนไข
         const filtered = data.filter((item) => {
         if (item.label === "TOXIC") {
-            return item.score >= 0.4 && item.score <= 0.6; // TOXIC อยู่ในช่วงที่กำหนด
+            return item.score >= 0.5 && item.score <= 0.7; // TOXIC อยู่ในช่วงที่กำหนด
         }
         return true; // อื่น ๆ เอาหมด
         });
@@ -45,6 +45,7 @@ const createReport = async (req, res) => {
       data: {
         reporterId: reporterId,
         typeOfReport: predict || ["Non Toxic"],
+        platform : platform,
         comment: comment,
       },
     });

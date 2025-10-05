@@ -56,6 +56,7 @@ export default function ResultPage() {
     }
 
     updata();
+    console.log(result)
   },[result])
 
   const fetchData = async (postData, platform, url) => {

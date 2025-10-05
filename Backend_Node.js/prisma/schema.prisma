@@ -44,6 +44,32 @@ model PostHistory {
   createdAt DateTime? @default(now())
 }
 
+type Comment {
+  author  String
+  content String
+  image   String?
+}
+
+type Content {
+  title   String
+  text    String
+  image   String?
+}
+
+
+model Post {
+  id        String    @id @default(auto()) @map("_id") @db.ObjectId
+  
+
+  platform  String    @default("mockup")
+  url       String    @default("#")
+  createdAt DateTime?  @default(now())
+  updatedAt DateTime?  @updatedAt
+
+  Content   Content
+  comments  Comment[]
+}
+
 enum ReportType {
   TOXIC
   OBSCENE

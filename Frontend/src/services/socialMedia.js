@@ -26,27 +26,11 @@ export async function fetchRedditPost(postId, subreddit) {
 
 export async function fetchTwitterPost(tweetId) {
   try {
-    const tweetRes = await axios.get(`https://api.twitter.com/2/tweets/${tweetId}`, {
-      headers: { Authorization: `Bearer ${BEARER_TOKEN}` },
-      params: { 'tweet.fields': 'created_at,author_id,public_metrics' }
-    });
-
-    const repliesRes = await axios.get('https://api.twitter.com/2/tweets/search/recent', {
-      headers: { Authorization: `Bearer ${BEARER_TOKEN}` },
-      params: {
-        query: `conversation_id:${tweetId}`,
-        'tweet.fields': 'author_id,created_at'
-      }
-    });
-
-    return {
-      platform: 'X (Twitter)',
-      url: `https://twitter.com/user/status/${tweetId}`,
-      content: tweetRes.data.data,
-      comments: repliesRes.data.data || []
-    };
+    const res = await axios.get(`http://localhost:5000/pull/twitter/${tweetId}`)
+    
+    return res.data ;
   } catch (error) {
-    throw new Error(`Failed to fetch Twitter post: ${error.message}`);
+    console.error(error)
   }
 }
 

@@ -35,7 +35,10 @@ const getHistory = async(req,res) =>{
         }
 
         const data = await prisma.postHistory.findMany({
-            where : {userId : userId}
+            where : {userId : userId},
+            orderBy : {
+                createdAt : "desc"
+            }
         })
 
         res.json(data)
@@ -59,9 +62,19 @@ const updateHistory = async (req,res) => {
 }
 
 
+const getMockUpPost = async (req ,res) => {
+    try {
+        const post = await prisma.post.findFirst();
+        res.json(post)
+    } catch (error) {
+        res.status(500).json({message : error.message})
+        console.log(error.message)
+    }
+}
 
 
 
 
 
-module.exports = {createHistory , getHistory , updateHistory};
+
+module.exports = {createHistory , getHistory , updateHistory , getMockUpPost};

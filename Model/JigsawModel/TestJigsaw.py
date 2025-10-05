@@ -25,10 +25,10 @@ print("Checking NLTK dependencies...")
 try:
     nltk.data.find('corpora/wordnet.zip')
     # ... (ส่วนนี้เหมือนเดิม)
-    print("✅ NLTK dependencies are already satisfied.")
+    print(" NLTK dependencies are already satisfied.")
 except nltk.downloader.DownloadError:
     # ... (ส่วนนี้เหมือนเดิม)
-    print("✅ NLTK dependencies downloaded.")
+    print(" NLTK dependencies downloaded.")
 
 # --- ค่าคงที่ ---
 MAX_SEQ_LEN = 200
@@ -111,28 +111,28 @@ def load_prediction_assets(weights_path=Weight_PATH,
     try:
         # 1. สร้างโครงสร้างโมเดลขึ้นมาใหม่สดๆ
         model = build_model()
-        print("✅ Model structure built successfully.")
+        print(" Model structure built successfully.")
         
         # 2. โหลดเฉพาะค่าน้ำหนัก (weights) เข้าไปในโครงสร้างใหม่
         model.load_weights(weights_path)
-        print("✅ Model weights loaded successfully.")
+        print(" Model weights loaded successfully.")
         
         # 3. โหลด Tokenizer และ Thresholds เหมือนเดิม
         with open(tokenizer_path, 'rb') as f:
             tokenizer = pickle.load(f)
-        print("✅ Tokenizer loaded successfully.")
+        print(" Tokenizer loaded successfully.")
 
         with open(thresholds_path, 'rb') as f:
             thresholds = pickle.load(f)
-        print("✅ Thresholds loaded successfully.")
+        print(" Thresholds loaded successfully.")
         
         return model, tokenizer, thresholds
 
     except FileNotFoundError as e:
-        print(f"❌ Error: Could not find a required file -> {e.filename}")
+        print(f" Error: Could not find a required file -> {e.filename}")
         return None, None, None
     except Exception as e:
-        print(f"❌ An unexpected error occurred: {e}")
+        print(f" An unexpected error occurred: {e}")
         return None, None, None
 
 # --- ฟังก์ชัน predict_toxicity (เหมือนเดิม) ---

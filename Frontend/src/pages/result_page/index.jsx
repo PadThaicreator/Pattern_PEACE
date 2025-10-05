@@ -59,12 +59,21 @@ export default function ResultPage() {
     console.log(result)
   },[result])
 
+    const getMockUp = async () =>{
+    try {
+       const res = await axios.get(`${config.apiBackend}/history/mockup`);
+       return res.data
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
   const fetchData = async (postData, platform, url) => {
     try {
       let data;
       switch (platform) {
         case "facebook":
-          data = await fetchFacebookPost(url);
+          data = await getMockUp();
           break;
         case "reddit":
           data = await fetchRedditPost(postData.postId, postData.subreddit);

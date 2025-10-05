@@ -104,7 +104,7 @@ loaded_model.compile(loss="categorical_crossentropy",
                      optimizer=tf.keras.optimizers.Adam(1e-3),
                      metrics=["accuracy"])
 loaded_model.load_weights(WEIGHT_PATH)
-print("✅ Weights loaded into new model")
+print(" Weights loaded into new model")
 
 # ---------------------------
 # Prediction function
@@ -160,7 +160,7 @@ def predict_with_full_rules(text):
     # Rule: positive + negative → negative
     final_label = clause_preds[-1] # Default to the last clause's prediction
     for i in range(len(clause_preds)-1):
-        if clause_preds[i] == "positive" and clause_preds[i+1] == "negative":
+        if clause_preds[i] == "positive" and clause_preds[i+1] != "negative":
             final_label = "negative"
             break
             

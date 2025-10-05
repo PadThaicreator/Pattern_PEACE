@@ -2,25 +2,16 @@ from fastapi import FastAPI, HTTPException
 import sys
 import nltk
 
-# --- ส่วนของการ Import ---
-# ⚠️ แก้ไขชื่อไฟล์ตรงนี้ จาก test เป็น testGo
 from NewDatasetModel.testGo import predict_with_full_rules 
-# ⚠️ แก้ไขชื่อไฟล์ตรงนี้ จาก Test เป็น TestJigsaw
 from JigsawModel.TestJigsaw import load_prediction_assets, predict_toxicity
 
 sys.stdout.reconfigure(encoding='utf-8')
 app = FastAPI()
 
-# --- ตัวแปร Global ---
 jigsaw_model = None
 jigsaw_tokenizer = None
 jigsaw_thresholds = None
 
-# --- แบ่งกลุ่ม Sentiment/Emotion ---
-positive_emotions = ["admiration", "amusement", "approval", "caring", "desire", "excitement", "gratitude", "joy", "love", "optimism", "pride", "relief"]
-negative_emotions = ["anger", "annoyance", "disappointment", "disapproval", "disgust", "embarrassment", "fear", "grief", "nervousness", "remorse", "sadness"]
-ambiguous_emotions = ["confusion", "curiosity", "realization", "surprise"]
-neutral_emotions = ["neutral"]
 
 def initialize_nltk():
     """ตรวจสอบและดาวน์โหลดข้อมูล NLTK ที่จำเป็นตอนเริ่มต้น"""
@@ -48,11 +39,11 @@ def startup_event():
     try:
         jigsaw_model, jigsaw_tokenizer, jigsaw_thresholds = load_prediction_assets()
         if all((jigsaw_model, jigsaw_tokenizer, jigsaw_thresholds is not None)):
-             print("✅ Jigsaw model loaded successfully!")
+             print(" Jigsaw model loaded successfully!")
         else:
-             print("🔥 Error loading Jigsaw model!")
+             print(" Error loading Jigsaw model!")
     except Exception as e:
-        print(f"🔥 A critical error occurred while loading the Jigsaw model: {e}")
+        print(f" A critical error occurred while loading the Jigsaw model: {e}")
 
 
 @app.get("/analyze")
@@ -66,7 +57,7 @@ def analyze_comment(comment: str):
 
     toxicity_analysis = {"is_toxic": False, "toxic_types": []}
 
-    # 💡 แก้ไข Logic: ตรวจสอบว่า sentiment ที่ได้ อยู่ในกลุ่ม negative หรือไม่
+   
     if sentiment_result == "negative":
         if not all((jigsaw_model, jigsaw_tokenizer, jigsaw_thresholds is not None)):
             raise HTTPException(
@@ -82,7 +73,7 @@ def analyze_comment(comment: str):
             toxicity_analysis["is_toxic"] = True
             toxicity_analysis["toxic_types"] = triggered_labels
 
-    # 💡 แก้ไข Response: ให้มีโครงสร้าง JSON ที่เหมือนกันเสมอ
+   
     return { 
         "comment": comment, 
         "sentiment_group": sentiment_result,

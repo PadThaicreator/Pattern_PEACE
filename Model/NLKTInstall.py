@@ -32,11 +32,11 @@ for package in required_packages:
              nltk.data.find(f'corpora/{package}')
         else:
              nltk.data.find(f'corpora/{package}.zip')
-        print(f"✅ '{package}' is already available.")
+        print(f" '{package}' is already available.")
     except LookupError:
         print(f"Downloading '{package}'...")
         nltk.download(package) # แสดง log การดาวน์โหลด
-        print(f"✅ Download complete for '{package}'.")
+        print(f" Download complete for '{package}'.")
 
 print("\n--- All NLTK data packages should now be complete. ---")
 # ```

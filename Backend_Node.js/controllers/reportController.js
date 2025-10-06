@@ -18,33 +18,25 @@ const createReport = async (req, res) => {
 
     let data;
     try {
-    const response = await axios.get(`http://127.0.0.1:8000/${comment}`);
-    data = response.data;
+    const response = await axios.get(`http://127.0.0.1:8000/analyze?comment=${comment}`);
+    if(response.data){
+      if(response.data.toxicity_analysis.toxic_types.length > 0){
+        data = response.data.toxicity_analysis.toxic_types;
+      }else{
+        data = ["Non Toxic"]
+      }
+    }
     } catch (err) {
     console.error('FastAPI request failed:', err.message);
     return res.status(502).json({ message: 'Failed to fetch from FastAPI', error: err.message });
     }
-    let predict
-    if(data.message != "Non Toxic"){
-        // ฟิลเตอร์ TOXIC ตามเงื่อนไข
-        const filtered = data.filter((item) => {
-        if (item.label === "TOXIC") {
-            return item.score >= 0.5 && item.score <= 0.7; // TOXIC อยู่ในช่วงที่กำหนด
-        }
-        return true; // อื่น ๆ เอาหมด
-        });
-
-        // เรียงจาก score มากไปน้อย
-        filtered.sort((a, b) => b.score - a.score);
-
-        // เอาแค่ 3 อันดับแรก
-        predict = filtered.slice(0, 3).map((item) => item.label);
-    }
+    
+    
 
     const report = await prisma.reportHistory.create({
       data: {
         reporterId: reporterId,
-        typeOfReport: predict || ["Non Toxic"],
+        typeOfReport: data,
         platform : platform,
         comment: comment,
       },

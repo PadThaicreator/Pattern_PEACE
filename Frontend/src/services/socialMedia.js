@@ -20,13 +20,7 @@ export async function fetchRedditPost(postId, subreddit) {
     const res = await axios.get(`${config.apiBackend}/pull/reddit/${postId}/${subreddit}`)
     const data = res.data;
 
-    // OCR any images in post content and comments
-    if (data?.content?.image) {
-      try {
-        const ocr = await ocrImageFromUrl(data.content.image);
-        if (ocr) data.content.text = (data.content.text || data.content.body || '') + `\n\nPicture Content:\n${ocr}`;
-      } catch (e) { console.warn('Reddit post image OCR failed', e); }
-    }
+    // OCR only images in comments (do not OCR the post image)
 
     if (Array.isArray(data.comments)) {
       await Promise.all(data.comments.map(async (c) => {
@@ -204,7 +198,8 @@ export async function fetchStackOverflowPost(questionId) {
       return text;
     }
 
-    const processedQuestionBody = await processHtmlWithOcr(question.body);
+  // For the question body, only convert HTML to text — do NOT OCR post images
+  const processedQuestionBody = htmlToText(question.body || '');
 
     // process answers in parallel with OCR
     const answers = await Promise.all(answersRes.data.items.map(async answer => {

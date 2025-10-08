@@ -23,7 +23,8 @@
     "react-router-dom": "^7.8.2",
     "redux-persist": "^6.0.0",
     "sweetalert2": "^11.23.0",
-    "tailwindcss": "^4.1.13"
+    "tailwindcss": "^4.1.13",
+    "tesseract.js": "^6.0.1"
   },
   "devDependencies": {
     "@eslint/js": "^9.33.0",

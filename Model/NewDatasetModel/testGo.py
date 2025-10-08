@@ -26,7 +26,7 @@ BASE_DIR = os.path.dirname(__file__)
 WEIGHT_PATH = os.path.join(BASE_DIR,  "goemotions_sentiment_singlelabel_bilstm_attention.weights.h5")
 TOKEN_PATH = os.path.join(BASE_DIR,  "tokenizer.pkl")
 # ---------------------------
-# NEW: Text Cleaning Function
+# Text Cleaning Function
 # ---------------------------
 stop_words = set(stopwords.words('english'))
 lemmatizer = WordNetLemmatizer()
@@ -96,7 +96,7 @@ def build_model(vocab_size, num_classes):
     x = Dropout(0.3)(att_out)
     x = Dense(128, activation="relu")(x)
     x = Dropout(0.2)(x)
-    out = Dense(num_classes, activation="softmax")(x)  # softmax สำหรับ class เดียว
+    out = Dense(num_classes, activation="softmax")(x) 
     return Model(inp, out)
 
 loaded_model = build_model(VOCAB_SIZE, NUM_CLASSES)
@@ -114,7 +114,7 @@ POS_KEYWORDS = ["good", "great", "happy", "love", "nice", "excellent", "beautifu
 CONJUNCTIONS = ["but", "however", "although"]
 
 def predict_with_full_rules(text):
-    # 1. Split text into clauses based on conjunctions (on raw text)
+   
     raw_clauses = [text.lower()]
     
     for conj in CONJUNCTIONS:
@@ -125,22 +125,21 @@ def predict_with_full_rules(text):
 
     clause_preds = []
     for raw_clause in raw_clauses:
-        # 2. Clean each individual clause before prediction
+      
         cleaned_clause = clean_text(raw_clause)
         
-        # 3. Tokenize and pad the cleaned clause
+      
         seq = pad_sequences(
             loaded_tokenizer.texts_to_sequences([cleaned_clause]),
             maxlen=MAX_SEQ_LEN, padding="post", truncating="post"
         )
         
-        # 4. Predict using the model
+     
         pred_probs = loaded_model.predict(seq, verbose=0)[0]
         pred_dict = dict(zip(sentiment_labels, pred_probs))
         pred_label = max(pred_dict, key=pred_dict.get)
         
-        # 5. Apply rules on the original (raw) clause
-        # Rule: "shit" → neutral
+       
         if raw_clause.startswith("shit") :
             new_string = re.sub("shit", "", raw_clause)
             seq = pad_sequences(
@@ -156,9 +155,8 @@ def predict_with_full_rules(text):
         
         clause_preds.append(pred_label)
     
-    # 6. Apply final rule based on clause sequence
-    # Rule: positive + negative → negative
-    final_label = clause_preds[-1] # Default to the last clause's prediction
+    
+    final_label = clause_preds[-1] 
     for i in range(len(clause_preds)-1):
         if clause_preds[i] == "positive" and clause_preds[i+1] != "negative":
             final_label = "negative"
@@ -169,9 +167,7 @@ def predict_with_full_rules(text):
     return final_label
 
 
-# # -----------------------
-# # ตัวอย่าง
-# # -----------------------
+
 # sample_texts = [
 #     "You think you so beautiful but you are not",
 #     "you are not",

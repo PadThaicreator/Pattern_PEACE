@@ -17,11 +17,13 @@ const createReport = async (req, res) => {
     }
 
     let data;
+    let explain
     try {
     const response = await axios.get(`http://127.0.0.1:8000/analyze?comment=${comment}`);
     if(response.data){
       if(response.data.toxicity_analysis.toxic_types.length > 0){
         data = response.data.toxicity_analysis.toxic_types;
+        explain = response.data.toxicity_analysis.explanation
       }else{
         data = ["Non Toxic"]
       }
@@ -38,6 +40,7 @@ const createReport = async (req, res) => {
         reporterId: reporterId,
         typeOfReport: data,
         platform : platform,
+        explain : explain,
         comment: comment,
       },
     });

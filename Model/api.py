@@ -3,7 +3,7 @@ import sys
 import nltk
 
 from NewDatasetModel.testGo import predict_with_full_rules 
-from JigsawModel.TestJigsaw import load_prediction_assets, predict_toxicity
+from JigsawModel.TestJigsaw import load_prediction_assets, predict_and_explain
 
 sys.stdout.reconfigure(encoding='utf-8')
 app = FastAPI()
@@ -52,28 +52,44 @@ def analyze_comment(comment: str):
     
     sentiment_result = predict_with_full_rules(comment)
     print("--------------------------------------------------------------------------------")
-    print(sentiment_result)
+    print(f"Sentiment Result: {sentiment_result}")
     print("--------------------------------------------------------------------------------")
 
-    toxicity_analysis = {"is_toxic": False, "toxic_types": []}
-
-   
+    # ✨ 1. เพิ่ม key 'explanation' เข้าไปในโครงสร้างเริ่มต้น
+    toxicity_analysis = {
+        "is_toxic": False, 
+        "toxic_types": [],
+        "explanation": []  # เพิ่ม key นี้เข้าไป
+    }
+    
     if sentiment_result == "negative":
-        if not all((jigsaw_model, jigsaw_tokenizer, jigsaw_thresholds is not None)):
+        if not all((jigsaw_model, jigsaw_tokenizer, jigsaw_thresholds)):
             raise HTTPException(
                 status_code=503, 
                 detail="Toxicity model is not available or failed to load."
             )
         
-        toxicity_results = predict_toxicity(text_batch, jigsaw_model, jigsaw_tokenizer, jigsaw_thresholds)
-        prediction_dict = toxicity_results[0]['prediction']
+        # ✨ 2. เปลี่ยนไปเรียกใช้ฟังก์ชันใหม่ predict_and_explain
+        # สมมติว่าฟังก์ชันใน TestJigsaw.py ชื่อ predict_and_explain
+        toxicity_results = predict_and_explain(text_batch, jigsaw_model, jigsaw_tokenizer, jigsaw_thresholds)
+        
+        # ดึงข้อมูลจากผลลัพธ์แรก (index 0)
+        result_data = toxicity_results[0]
+        prediction_dict = result_data['prediction']
         triggered_labels = [label for label, value in prediction_dict.items() if value == 1]
         
         if triggered_labels:
             toxicity_analysis["is_toxic"] = True
             toxicity_analysis["toxic_types"] = triggered_labels
+            
+            top_explanation = result_data['explanation'][:3] 
+            
+            # ✨ แก้ไขบรรทัดนี้: ดึงเฉพาะ word (ตัวแรกของ tuple) ออกมา
+            just_the_words = [word for word, score in top_explanation]
+            
+            toxicity_analysis["explanation"] = just_the_words
 
-   
+    # สังเกตว่า toxicity_analysis ตอนนี้มีข้อมูล explanation อยู่ด้วย
     return { 
         "comment": comment, 
         "sentiment_group": sentiment_result,

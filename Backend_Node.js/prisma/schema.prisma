@@ -29,7 +29,8 @@ model ReportHistory {
   reporter      User        @relation(fields: [reporterId], references: [id])
   reporterId    String  @db.ObjectId
   typeOfReport  String[]
-  platform  String?
+  platform      String?
+  explain       String[]
   comment       String?
   createdAt     DateTime?   @default(now())
 }

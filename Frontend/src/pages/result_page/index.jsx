@@ -18,6 +18,7 @@ import axios from "axios";
 import { config } from "../../config";
 import Swal from "sweetalert2";
 import { useSelector } from "react-redux";
+import { Button, Modal } from "antd";
 
 export default function ResultPage() {
   const location = useLocation();
@@ -25,48 +26,53 @@ export default function ResultPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [result, setResult] = useState(null);
-  const [historyId , setHistory] = useState();
-  const user = useSelector((state) => state.user.user)
-  const { postData, platform, url  } = location.state;
+  const [historyId, setHistory] = useState();
+
+  const [data, setData] = useState();
+  const [text, setText] = useState();
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const user = useSelector((state) => state.user.user);
+  const { postData, platform, url } = location.state;
   useEffect(() => {
     if (!location.state) {
       navigate("/");
       return;
     }
 
-    const { historyId } =  location.state;
+    const { historyId } = location.state;
     setHistory(historyId);
     fetchData(postData, platform, url);
   }, [location.state, navigate]);
 
-  useEffect(()=> {
+  useEffect(() => {
     const updata = async () => {
-
-      if(!historyId){
+      if (!historyId) {
         return;
       }
-      
+
       if (result?.content?.title) {
-        
         const payload = {
           title: result?.content?.title,
         };
-        await axios.put(`${config.apiBackend}/history/update/${historyId}`, payload);
+        await axios.put(
+          `${config.apiBackend}/history/update/${historyId}`,
+          payload
+        );
       }
-    }
+    };
 
     updata();
-    console.log(result)
-  },[result])
+    console.log(result);
+  }, [result]);
 
-    const getMockUp = async () =>{
+  const getMockUp = async () => {
     try {
-       const res = await axios.get(`${config.apiBackend}/history/mockup`);
-       return res.data
+      const res = await axios.get(`${config.apiBackend}/history/mockup`);
+      return res.data;
     } catch (error) {
-      console.log(error)
+      console.log(error);
     }
-  }
+  };
 
   const fetchData = async (postData, platform, url) => {
     try {
@@ -87,10 +93,8 @@ export default function ResultPage() {
         default:
           throw new Error("Unsupported platform");
       }
-      
-      setResult(data);
 
-      
+      setResult(data);
     } catch (err) {
       setError(err.message);
     } finally {
@@ -147,33 +151,51 @@ export default function ResultPage() {
 
   const handlePredict = async (text) => {
     try {
+      setText(text);
       const payload = {
-        comment : text,
-        reporterId :  user.id,
-        platform : platform
-      }
-      const res = await axios.post(`${config.apiBackend}/api/createReport` , payload)
-      const data = res.data
-      if(data){
-        Swal.fire({
-                  title: "Predict Success",
-                  text : `This comment is ${data.report.typeOfReport}` ,
-                  icon: "success",
-        });
+        comment: text,
+        reporterId: user.id,
+        platform: platform,
+      };
+      const res = await axios.post(
+        `${config.apiBackend}/api/createReport`,
+        payload
+      );
+      const data = res.data;
+      if (data) {
+        // Swal.fire({
+        //           title: "Predict Success",
+        //           html : `<div>This comment is ${data.report.typeOfReport}</div><div>This word is ${data.report.explain}</div>` ,
+        //           icon: "success",
+        // });
+        setData(data);
+        showModal();
       }
     } catch (error) {
       Swal.fire({
-              title: "Predict Failed",
-              text: "Model or Backend Error",
-              icon: "warning",
+        title: "Predict Failed",
+        text: "Model or Backend Error",
+        icon: "warning",
       });
-      console.log(error.message)
+      console.log(error.message);
     }
+  };
+
+  const showModal = () => {
+    setIsModalOpen(true);
+  };
+
+  const handleOk = () => {
+    setIsModalOpen(false);
+  };
+  const handleCancel = () => {
+    setIsModalOpen(false);
   };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-pink-200 via-pink-100 to-orange-100">
       {/* Header */}
+
       <div className="bg-white border-b border-gray-200 shadow-sm">
         <div className="max-w-4xl mx-auto px-6 py-6">
           <div className="flex items-center justify-between">
@@ -321,6 +343,62 @@ export default function ResultPage() {
           </div>
         </div>
       </div>
+      <Modal
+        title="Comment Report"
+        closable={{ "aria-label": "Custom Close Button" }}
+        open={isModalOpen}
+        onOk={handleOk}
+        onCancel={handleCancel}
+        cancelButtonProps={{ style: { display: 'none' } }}
+      >
+        <div className="flex flex-col gap-4 p-6 bg-gradient-to-br from-slate-50 to-slate-100 rounded-2xl shadow-lg">
+          {/* Comment Section */}
+          <div className="bg-white p-4 rounded-xl shadow-sm border border-slate-200">
+            <p className="text-sm text-slate-500 font-medium mb-2">Comment</p>
+            <p className="text-slate-800 text-base leading-relaxed">{text}</p>
+          </div>
+
+          {/* Toxic Topic Section */}
+          <div className="space-y-3">
+            <div className="flex items-center gap-2">
+              <div className="w-1 h-5 bg-red-500 rounded-full"></div>
+              <h3 className="text-sm font-semibold text-slate-700">
+                Toxic Topics
+              </h3>
+            </div>
+            <div className="flex flex-wrap gap-2">
+              {data?.report?.typeOfReport.map((item, index) => (
+                <div
+                  key={index}
+                  className="px-4 py-2 bg-gradient-to-r from-red-50 to-orange-50 shadow-sm rounded-lg border border-red-200 text-red-700 text-sm font-medium hover:shadow-md transition-shadow"
+                >
+                  {item}
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Toxic Words Section */}
+          <div className="space-y-3">
+            <div className="flex items-center gap-2">
+              <div className="w-1 h-5 bg-amber-500 rounded-full"></div>
+              <h3 className="text-sm font-semibold text-slate-700">
+                Words That Seem Toxic
+              </h3>
+            </div>
+            <div className="flex flex-wrap gap-2">
+              {data?.report?.explain.map((item, index) => (
+                <div
+                  key={index}
+                  className="px-4 py-2 bg-gradient-to-r from-amber-50 to-yellow-50 shadow-sm rounded-lg border border-amber-200 text-amber-700 text-sm font-medium hover:shadow-md transition-shadow"
+                >
+                  {item}
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </Modal>
     </div>
   );
 }

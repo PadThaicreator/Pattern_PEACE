@@ -369,7 +369,7 @@ export default function ResultPage() {
               </h3>
             </div>
             <div className="flex flex-wrap gap-2">
-              {data?.report?.typeOfReport.map((item, index) => (
+              {data?.report?.typeOfReport && data?.report?.typeOfReport.map((item, index) => (
                 <div
                   key={index}
                   className="px-4 py-2 bg-gradient-to-r from-red-50 to-orange-50 shadow-sm rounded-lg border border-red-200 text-red-700 text-sm font-medium hover:shadow-md transition-shadow"

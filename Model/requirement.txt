@@ -1,0 +1,18 @@
+# Deep Learning (for modelAux.py)
+tensorflow>=2.10
+
+# Traditional ML (for model.py)
+scikit-learn
+imbalanced-learn
+
+# NLP + Data processing
+pandas
+nltk
+nlpaug
+
+# Hugging Face Datasets (used in modelAux)
+datasets
+
+# Optional utilities
+tqdm
+numpy

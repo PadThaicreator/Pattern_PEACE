@@ -40,7 +40,7 @@
    npx prisma generate
    ```
 
-#### Backend_FastAPI
+#### Model
 
 1. เปิด Command Prompt (cmd) ในโฟลเดอร์ `Backend_FastAPI`
 2. รันคำสั่ง:

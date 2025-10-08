@@ -42,7 +42,7 @@
 
 #### Model
 
-1. เปิด Command Prompt (cmd) ในโฟลเดอร์ `Backend_FastAPI`
+1. เปิด Command Prompt (cmd) ในโฟลเดอร์ `Model`
 2. รันคำสั่ง:
    ```bash
    pip install "fastapi[standard]"
@@ -87,8 +87,8 @@ npm install
 npx prisma generate
 npm run dev
 
-# Backend_FastAPI (รันในหน้าต่าง cmd แยกต่างหาก)
-cd Backend_FastAPI
+# Model (รันในหน้าต่าง cmd แยกต่างหาก)
+cd Model
 pip install "fastapi[standard]"
 pip install -r requirements.txt
 ```

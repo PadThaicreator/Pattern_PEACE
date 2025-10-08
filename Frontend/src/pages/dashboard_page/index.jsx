@@ -254,7 +254,7 @@ export default function DashboardPage() {
 			</div>
 
 			<div className="bg-white shadow-md p-4 rounded-lg">
-				<div className="font-semibold mb-2">Monthly Reports Trend</div>
+				<div className="font-semibold mb-2">Monthly Reports Usage</div>
 				<BarChart data={byMonth} barColor="#f59e0b" />
 			</div>
 		</div>

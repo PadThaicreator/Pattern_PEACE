@@ -29,16 +29,20 @@ const pullTwitterPost = async (req, res) => {
       headers: { Authorization: `Bearer ${process.env.BEARER_TOKEN}` },
       params: {
         query: `conversation_id:${tweetId}`,
-        'tweet.fields': 'author_id,created_at'
+        'tweet.fields': 'author_id,created_at',
+        max_results: 20 // fetch a limited set then slice to 5 below
       }
     });
 
-    const comments = (repliesRes.data.data || []).map(comment => {
+    // Take only up to 5 replies to reduce rate/size
+    const rawReplies = (repliesRes.data.data || []).slice(0, 5);
+    const comments = rawReplies.map(comment => {
+      const image = extractImageUrlFromText(comment.text);
       const cleanedText = comment.text
-        .replace(/@\w+/g, '')             // ลบ mentions
-        .replace(/https?:\/\/t\.co\/\w+/g, '') // ลบ short URLs
+        .replace(/@\w+/g, '')             // remove mentions
+        .replace(/https?:\/\/t\.co\/\w+/g, '') // remove short URLs
         .trim();
-      return { ...comment, text: cleanedText };
+      return { ...comment, text: cleanedText, image };
     });
 
     // ส่ง response
@@ -50,7 +54,12 @@ const pullTwitterPost = async (req, res) => {
     });
 
   } catch (error) {
-    console.error(error);
+    console.error('pullTwitterPost error:', error.message);
+    if (error.response) {
+      console.error('Twitter API response status:', error.response.status);
+      console.error('Twitter API response data:', error.response.data);
+      return res.status(502).json({ message: 'Twitter API error', status: error.response.status, data: error.response.data });
+    }
     res.status(500).json({ message: error.message });
   }
 };
@@ -95,8 +104,9 @@ const  pullRedditPost = async (req, res) => {
     }
 
     // ดึง comment พร้อมรูปถ้ามี
-const comments = (response.data[1]?.data?.children || [])
+    const comments = (response.data[1]?.data?.children || [])
   .filter(comment => comment.kind === 't1' && comment.data)
+  .slice(0,5)
   .map(comment => {
     const image = extractImageUrlFromText(comment.data.body);
     const rawContent = comment.data.body;
@@ -105,7 +115,7 @@ const comments = (response.data[1]?.data?.children || [])
     return {
       author: comment.data.author,
       content: contents ,
-      image // จะได้ full preview link
+      image // will be the full preview link if present
     };
   });
 
@@ -133,3 +143,35 @@ const comments = (response.data[1]?.data?.children || [])
 // https://www.reddit.com/r/ThailandTourism/comments/1nrq3kh/thai_peoples_are_crazy_about_taking_loan/
 
 module.exports = {pullTwitterPost , pullRedditPost};
+
+// proxy image fetch to avoid CORS for frontend OCR
+const fetch = require('node-fetch');
+
+const fetchImageProxy = async (req, res) => {
+  try {
+    const url = req.query.url;
+    if (!url || typeof url !== 'string' || !/^https?:\/\//i.test(url)) {
+      return res.status(400).json({ message: 'Invalid url parameter' });
+    }
+
+    // Basic safety: limit to reasonable length
+    if (url.length > 2000) return res.status(400).json({ message: 'URL too long' });
+
+    // Fetch image as arraybuffer
+    const resp = await axios.get(url, { responseType: 'arraybuffer', timeout: 15000, headers: { 'User-Agent': 'PEACE_Pattern/1.0' } });
+    const contentType = resp.headers['content-type'] || 'application/octet-stream';
+
+    res.setHeader('Content-Type', contentType);
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.send(Buffer.from(resp.data, 'binary'));
+  } catch (err) {
+    console.error('fetchImageProxy error:', err.message || err);
+    if (err.response) {
+      return res.status(502).json({ message: 'Upstream fetch failed', status: err.response.status });
+    }
+    res.status(500).json({ message: 'Failed to fetch image' });
+  }
+};
+
+// add proxy export
+module.exports.fetchImageProxy = fetchImageProxy;

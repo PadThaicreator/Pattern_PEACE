@@ -153,21 +153,21 @@ export default function ResultPage() {
     try {
       setText(text);
       const payload = {
-        comment: text,
-        reporterId: user.id,
-        platform: platform,
-      };
-      const res = await axios.post(
-        `${config.apiBackend}/api/createReport`,
-        payload
-      );
-      const data = res.data;
-      if (data) {
-        // Swal.fire({
-        //           title: "Predict Success",
-        //           html : `<div>This comment is ${data.report.typeOfReport}</div><div>This word is ${data.report.explain}</div>` ,
-        //           icon: "success",
-        // });
+        comment : text,
+        reporterId :  user.id,
+        platform : platform
+      }
+      // Log payload for debugging (inspect in browser console and network)
+      try {
+        console.log('createReport payload preview:', payload);
+        const json = JSON.stringify(payload);
+        console.log('createReport payload size (bytes):', new Blob([json]).size);
+      } catch (e) {
+        console.warn('Failed to stringify payload for logging', e);
+      }
+      const res = await axios.post(`${config.apiBackend}/api/createReport` , payload)
+      const data = res.data
+      if(data){
         setData(data);
         showModal();
       }
@@ -258,17 +258,19 @@ export default function ResultPage() {
                 </div>
               )}
 
-              <div className="pt-4 border-t border-gray-200">
-                <a
-                  href={result?.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 text-blue-600 hover:text-blue-800 transition-colors font-medium"
-                >
-                  <ExternalLink className="w-4 h-4" />
-                  View Original Post
-                </a>
-              </div>
+              {result?.url && (
+                <div className="pt-4 border-t border-gray-200">
+                  <a
+                    href={result?.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-2 text-blue-600 hover:text-blue-800 transition-colors font-medium"
+                  >
+                    <ExternalLink className="w-4 h-4" />
+                    View Original Post
+                  </a>
+                </div>
+              )}
             </div>
           </div>
 

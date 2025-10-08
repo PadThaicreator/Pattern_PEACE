@@ -46,7 +46,7 @@
 2. รันคำสั่ง:
    ```bash
    pip install "fastapi[standard]"
-   pip install -r requirements.txt
+   pip install -r requirement.txt
    ```
 
 ---

@@ -100,3 +100,10 @@ pip install -r requirements.txt
 - ต้องรัน Backend ก่อน Frontend
 - ตรวจสอบให้แน่ใจว่ามี Node.js และ Python ติดตั้งในเครื่องแล้ว
 - Backend_NodeJS จะรวม FastAPI ไว้ด้วย ดังนั้นต้องติดตั้งทั้ง Node.js และ Python dependencies
+
+
+.env
+   JWT_SECRET=SECRETKEY
+   PORT=5000
+   DATABASE_URL="mongodb+srv://kopkit2542_db_user:86FP86G57ngsay4V@cluster0.qxqb091.mongodb.net/PEACE?retryWrites=true&w=majority&appName=Cluster0"
+   BEARER_TOKEN =AAAAAAAAAAAAAAAAAAAAAOxM4QEAAAAA8uEi52qBRw9E788x42dhpS9TDVQ%3DHgQEE2kFejbvoeN8HTekIvjg0C84c3GeyDV5HPqOHd273MVI7s
